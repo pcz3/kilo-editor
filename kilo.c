@@ -1,6 +1,12 @@
+/*** includes ***/
+
 #include "kilo.h"
 
+/*** data ***/
+
 struct termios orig_termios;
+
+/*** terminal ***/
 
 void die(const char * s)
 {
@@ -32,6 +38,9 @@ void enableRawMode()
     if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw) == -1)
         die("tcsetattr");
 }
+
+/*** init ***/
+
 int main()
 {
     enableRawMode();
