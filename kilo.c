@@ -1,5 +1,5 @@
 // TODO: fix pointer space formatting
-
+// TODO: add args to main to so that clear line/screen mode can be set
 
 /** includes ***/
 
