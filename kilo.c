@@ -2,6 +2,10 @@
 
 #include "kilo.h"
 
+/*** defines ***/
+
+#define CTRL_KEY(k) ((k) & 0x1f)
+
 /*** data ***/
 
 struct termios orig_termios;
@@ -39,6 +43,33 @@ void enableRawMode()
         die("tcsetattr");
 }
 
+char editorReadKey()
+{
+    int nread;
+    char c;
+    while ((nread = read(STDIN_FILENO, &c, 1)) != 1)
+    {
+        if (nread == -1 && errno != EAGAIN) die("read");
+    }
+    return c;
+}
+
+/*** input ***/
+
+void editorProcessKeypress()
+{
+    char c = editorReadKey();
+    printf("%d\r\n", c);
+    switch(c)
+    {
+    case CTRL_KEY('q'):
+        exit(0);
+        break;
+    default:
+        break;
+    }
+}
+
 /*** init ***/
 
 int main()
@@ -47,11 +78,7 @@ int main()
 
     while (1)
     {
-        char c = '\0';
-        if (read(STDIN_FILENO, &c, 1) == -1 && errno != EAGAIN)
-            die("read");
-        iscntrl(c) ? printf("%d\r\n", c) : printf("%d ('%c')\r\n", c, c);
-        if (c == 'q') break;
+        editorProcessKeypress();
     }
     return 0;
 }
