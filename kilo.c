@@ -59,9 +59,22 @@ char editorReadKey()
 
 /*** output ***/
 
+void editorDrawRows()
+{
+    int y;
+    for (y = 24; y > 0; y--)
+    {
+        write(STDOUT_FILENO, "~\r\n", 3);
+    }
+}
+
 void editorRefreshScreen()
 {
     write(STDOUT_FILENO, "\x1b[2J", 4);
+    write(STDOUT_FILENO, "\x1b[H", 3);
+
+    editorDrawRows();
+
     write(STDOUT_FILENO, "\x1b[H", 3);
 }
 
@@ -70,13 +83,12 @@ void editorRefreshScreen()
 void editorProcessKeypress()
 {
     char c = editorReadKey();
-    printf("%d\r\n", c);
+    // printf("%d\r\n", c);
     switch(c)
     {
     case CTRL_KEY('q'):
         write(STDOUT_FILENO, "\x1b[2J", 4);
         write(STDOUT_FILENO, "\x1b[H", 3);
-
         exit(0);
         break;
     default:
