@@ -1,4 +1,3 @@
-// TODO: fix pointer space formatting
 // TODO: add args to main to so that clear line/screen mode can be set
 
 /** includes ***/
@@ -30,7 +29,7 @@ struct editorConfig E;
 
 /*** terminal ***/
 
-void die(const char * s)
+void die(const char *s)
 {
     write(STDOUT_FILENO, "\x1b[2J", 4);
     write(STDOUT_FILENO, "\x1b[H", 3);
@@ -76,7 +75,7 @@ char editorReadKey()
     return c;
 }
 
-int getCursorPosition(int * rows, int * cols)
+int getCursorPosition(int *rows, int *cols)
 {
     char buf[32];
     unsigned int ii = 0;
@@ -102,7 +101,7 @@ int getCursorPosition(int * rows, int * cols)
     return 0;
 }
 
-int getWindowSize(int * rows, int * cols)
+int getWindowSize(int *rows, int *cols)
 {
     struct winsize ws;
     if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws) == -1 || ws.ws_col == 0)
@@ -154,6 +153,12 @@ void editorDrawRows(abuf_t *ab)
     for (y = E.screenrows; y > 0; y--)
     {
         abAppend(ab, "~", 1);
+        /*
+         * Uncomment the following line to clear each terminal line
+         * individually. Comment out the appending of escape sequence
+         * <esc>[2j in editorRefreshScreen to prevent full screen clear
+         * on every refresh loop.
+         */
         abAppend(ab, "\x1b[K", 3);
 
         if (y > 1)
@@ -165,6 +170,12 @@ void editorRefreshScreen()
 {
     abuf_t ab = ABUF_INIT;
     abAppend(&ab, "\x1b[&25l", 6);
+    /*
+     * Uncomment the following line to clear the entire terminal with
+     * every refresh loop. Comment out the appending of escape sequence
+     * <esc>[K in editorDrawRows to prevent clearing of each line
+     * individually.
+     */
     // abAppend(&ab, "\x1b[2J", 4);
     abAppend(&ab, "\x1b[H", 3);
 
