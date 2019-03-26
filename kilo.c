@@ -210,7 +210,7 @@ void abFree(abuf_t *ab)
 void editorDrawRows(abuf_t *ab)
 {
     int y;
-    for (y = E.screenrows; y > 0; y--)
+    for (y = 0; y < E.screenrows; y++)
     {
         if (y == E.screenrows / 2)
         {
@@ -239,7 +239,7 @@ void editorDrawRows(abuf_t *ab)
          */
         abAppend(ab, "\x1b[K", 3);
 
-        if (y > 1)
+        if (y < E.screenrows - 1)
             abAppend(ab, "\r\n", 2);
     }
 }
