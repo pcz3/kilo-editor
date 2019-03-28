@@ -204,7 +204,6 @@ void abFree(abuf_t *ab)
     free(ab->b);
 }
 
-
 /*** output ***/
 
 void editorDrawRows(abuf_t *ab)
@@ -212,25 +211,37 @@ void editorDrawRows(abuf_t *ab)
     int y;
     for (y = 0; y < E.screenrows; y++)
     {
-        if (y == E.screenrows / 2)
+        if (y >= E.numrows)
         {
-            char welcome[80];
-            int welcomelen = snprintf(welcome, sizeof(welcome),
-                "Kilo editor -- version %s", KILO_VERSION);
-            if (welcomelen > E.screencols)
-                welcomelen = E.screencols;
-            int padding = (E.screencols - welcomelen) / 2;
-            if (padding)
+            if (y == E.screenrows / 2)
             {
-                abAppend(ab, "~", 1);
-                padding--;
+                char welcome[80];
+                int welcomelen = snprintf(welcome, sizeof(welcome),
+                    "Kilo editor -- version %s", KILO_VERSION);
+                if (welcomelen > E.screencols)
+                    welcomelen = E.screencols;
+                int padding = (E.screencols - welcomelen) / 2;
+                if (padding)
+                {
+                    abAppend(ab, "~", 1);
+                    padding--;
+                }
+                while (padding--)
+                    abAppend(ab, " ", 1);
+                abAppend(ab, welcome, welcomelen);
             }
-            while (padding--)
-                abAppend(ab, " ", 1);
-            abAppend(ab, welcome, welcomelen);
+            else
+                abAppend(ab, "~", 1);
         }
         else
-            abAppend(ab, "~", 1);
+        {
+            // TODO: this can be prettier
+            int len = E.row.size;
+            if (len > E.screencols)
+                len = E.screencols;
+            abAppend(ab, E.row.chars, len);
+        }
+
         /*
          * Uncomment the following line to clear each terminal line
          * individually. Comment out the appending of escape sequence
@@ -329,6 +340,7 @@ int main()
 {
     enableRawMode();
     initEditor();
+    editorOpen();
 
     while (1)
     {
